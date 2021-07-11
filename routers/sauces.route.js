@@ -1,8 +1,9 @@
 const express = require("express")
 const router = express.Router()
-const sauceCtrl = require('../controllers/sauces.controllers')
 const auth = require('../middleware/auth')
 const multer = require('../middleware/multer-config')
+const sauceCtrl = require('../controllers/sauces.controllers')
+
 
 
 /* ROUTES POUR LA GESTION DES SAUCES */

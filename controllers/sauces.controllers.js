@@ -1,21 +1,33 @@
 const sauceSchema = require('../models/sauces.modele')
 
+
+
+
 //Fonction pour créer une sauce (méthode POST sur la route /api/sauces)
 exports.creerSauce = (req, res, next) => { 
-    console.log ("Demande de création de sauce")
-    console.log(req)
-
-    /*
+    console.log ("Demande de création de sauce")  
     const sauceObject = JSON.parse(req.body.sauce)
-    delete sauceObject._id
+    //delete sauceObject._id
     const sauce = new sauceSchema({
-        ...sauceObject,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        //...sauceObject,
+        name: sauceObject.name,
+        manufacturer: sauceObject.manufacturer,
+        description: sauceObject.description,
+        mainPepper: sauceObject.mainPepper,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+        heat: sauceObject.heat,
+        likes: [1],
+        dislikes: [0],
+        usersLiked: ["60e885ec2d53891cb43a9394"],
+        usersDisliked: [],        
+        userId: "60e885ec2d53891cb43a9394"
+        
     })
+    
     sauce.save()
     .then(()=> res.status(201).json({ 'message': 'Sauce enregistrée'}))
     .catch(error => res.status(400).json({ error }))
-*/
+
 }
 
 //Fonction pour renvoyer toutes les sauces au frontend

@@ -1,7 +1,7 @@
 const userSchema = require('../models/users.modele')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const RANDOM_TOKEN_SECRET = "kgklr95hjio36oyt74fful963ilr45yu7q122wimqvuk32ktbs74bek63"
+//const RANDOM_TOKEN_SECRET = "kgklr95hjio36oyt74fful963ilr45yu7q122wimqvuk32ktbs74bek63"
 //Fonction pour l'inscription du client
 exports.signup = (req, res, next) => {
     if (req.body.email == null || req.body.password == null) return res.status(400)
@@ -35,7 +35,7 @@ exports.login = (req, res, next)=>{
                 userID: user._id,
                 token: jwt.sign(
                     {userID: user.id},
-                    RANDOM_TOKEN_SECRET,
+                    "RANDOM_TOKEN_SECRET",
                     { expiresIn: '24h'}
                 )
 

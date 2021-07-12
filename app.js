@@ -1,7 +1,7 @@
 const express = require("express")
 var bodyParser = require('body-parser') //body-parser nous permet d'extraire les données en provenance du frontend en les transformant en objet json
 const cors = require('cors')
-const morgan = require("morgan")
+//const morgan = require("morgan")
 const path = require("path") //le plugin path nus donne accès aux chemins de notre système de fichier
 
 const sauceRoutes = require('./routers/sauces.route');
@@ -11,7 +11,7 @@ const app = express()
 
 app.use(bodyParser.urlencoded({ extended: true}))
 app.use(bodyParser.json()) //Ici, on demande à body-parser de convertir le corps de la requête en objet JSON
-app.use(morgan("dev"))
+//app.use(morgan("dev"))
 app.use(cors())
 
 /* ENTETE DES REPONSES */

@@ -37,39 +37,45 @@ exports.renvoyerUneSauce = (req, res, next)=>{
 
 //Fonction pour modifier une sauce
 exports.modifierSauce = (req, res, next)=>{ 
-    console.log ("Demande de modification d'une sauce")
-    //req.body.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    sauceSchema.updateOne({_id: req.params.id}, {...req.body, _id: req.params.id} ) //la méthode updateOne demande deux paramètres
-    .then( () =>res.status(200).send({'message': 'Sauce modifiée' }) )       
-    .catch(error => res.status(400).send({ error }))
+    console.log(req.body)
+    if(req.file) {
+        req.body.sauce = JSON.parse(req.body.sauce)
+        req.body.sauce.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        console.log(req.body)
+        sauceSchema.updateOne({_id: req.params.id}, {...req.body.sauce, _id: req.params.id} )
+        .then( () =>res.status(200).send({'message': 'Sauce modifiée' }) )       
+        .catch(error => res.status(400).send({ error }))
+    } else {
+        console.log(req.body)
+        sauceSchema.updateOne({_id: req.params.id}, {...req.body, _id: req.params.id} ) //la méthode updateOne demande deux paramètres
+        .then( () =>res.status(200).send({'message': 'Sauce modifiée' }) )       
+        .catch(error => res.status(400).send({ error }))
+    }
+    
 }
 
 //Fonction pour supprimer une sauce
 exports.supprimerSauce = (req, res, next)=>{ 
-    console.log ("Demande de suppression d'une sauce")
     sauceSchema.deleteOne({_id: req.params.id})
     .then( () => res.status(200).send({'message': 'Sauce supprimée'}) )
     .catch(error => res.status(404).send({ error }))
 }
 
 //Fonction pour aimer une sauce
-
 exports.aimerSauce = (req, res, next)=>{
     /* Dans ce middleware, je reçois l'ID de la sauce (req.params.id) et 
-        un objet contenant dans req.body, une clé like avec une valeur (0, 1 ou -1) et une clé userId */
+        un objet req.body contenant un like avec comme valeur (0, 1 ou -1) et un userId */
     let sauceId = req.params.id
     let likeValue = req.body.like
     let userId = req.body.userId
     let maj = false
     sauceSchema.findOne({_id: sauceId})
     .then( sauce => {
-        
         let posDisliked = sauce.usersDisliked.indexOf(userId)
         let posLiked = sauce.usersLiked.indexOf(userId)
         switch (likeValue) {
             case -1:
                 if(posDisliked < 0) { //Si userID n'est pas dans le tableau usersDisliked, on l'ajoute
-                    console.log("L'utilisateur n'aime pas la sauce  " )
                     sauce.usersDisliked.push(userId)
                     sauce.dislikes+=1
                     maj=true
@@ -77,28 +83,24 @@ exports.aimerSauce = (req, res, next)=>{
                 }
             case 1:
                 if(posLiked < 0) { //Si userID n'est pas dans le tableau usersLiked, on l'ajoute
-                    console.log("L'utilisateur aime la sauce " )
                     sauce.usersLiked.push(userId)
                     sauce.likes+=1
                     maj=true
                     break
                 }
             case 0:
-                if (posDisliked >= 0) {
-                    console.log("L'utilisateur retire je n'aime pas la sauce: "  )
+                if (posDisliked >= 0) { //L'utilisateur annule je n'aime pas la sauce
                     sauce.usersDisliked.pop(userId)
                     sauce.dislikes-=1
                     maj=true
                     break
                 }
-                if(posLiked >= 0) {
-                    console.log("l'utilisateur retire son j'aime " )
+                if(posLiked >= 0) { //l'utilisateur annule son j'aime
                     sauce.usersLiked.pop(userId)
                     sauce.likes-=1
                     maj=true
                     break
                 }
-
             default:
                 res.status(200).send({ 'message': 'Mauvaise opération'})
         }
@@ -107,8 +109,6 @@ exports.aimerSauce = (req, res, next)=>{
             .then(res.status(200).send({ 'message': 'Vous avez voté une sauce'}))
             .catch(error => res.status(400).send({ error }))
         }
-        
     })
-    .catch(error => res.status(404).send({ error }))
-        
+    .catch(error => res.status(404).send({ error }))   
 }

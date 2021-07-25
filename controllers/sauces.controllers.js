@@ -1,6 +1,6 @@
 const sauceSchema = require('../models/sauces.modele')
 
-//Fonction pour créer une sauce (méthode POST sur la route '/api/sauces')
+//Middleware (fonction) pour créer une sauce (méthode POST sur la route '/api/sauces')
 exports.creerSauce = (req, res, next) => { 
     const sauceACreer = JSON.parse(req.body.sauce) 
     console.log(sauceACreer)   
@@ -21,47 +21,43 @@ exports.creerSauce = (req, res, next) => {
     })
 }
 
-//Fonction pour renvoyer toutes les sauces au frontend (méthode GET sur la route '/')
+//Middleware (fonction) pour renvoyer toutes les sauces au frontend (méthode GET sur la route '/')
 exports.renvoyerToutesLesSauces = (req, res, next)=>{ 
     sauceSchema.find()
     .then( sauces =>res.status(200).send(sauces) )
     .catch(error => res.status(400).send({ error }))
 }
 
-//Fonction pour renvoyer une sauce au frontend (méthode GET sur la route '/:id')
+//Middleware (fonction) pour renvoyer une sauce au frontend (méthode GET sur la route '/:id')
 exports.renvoyerUneSauce = (req, res, next)=>{
     sauceSchema.findOne({_id: req.params.id})
     .then( sauce =>res.status(200).send(sauce) )
     .catch(error => res.status(404).send({ error }))
 }
 
-//Fonction pour modifier une sauce
+//Middleware (fonction) pour modifier une sauce
 exports.modifierSauce = (req, res, next)=>{ 
-    console.log(req.body)
     if(req.file) {
         req.body.sauce = JSON.parse(req.body.sauce)
         req.body.sauce.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        console.log(req.body)
         sauceSchema.updateOne({_id: req.params.id}, {...req.body.sauce, _id: req.params.id} )
         .then( () =>res.status(200).send({'message': 'Sauce modifiée' }) )       
         .catch(error => res.status(400).send({ error }))
     } else {
-        console.log(req.body)
         sauceSchema.updateOne({_id: req.params.id}, {...req.body, _id: req.params.id} ) //la méthode updateOne demande deux paramètres
         .then( () =>res.status(200).send({'message': 'Sauce modifiée' }) )       
         .catch(error => res.status(400).send({ error }))
-    }
-    
+    } 
 }
 
-//Fonction pour supprimer une sauce
+//Middleware (fonction) pour supprimer une sauce
 exports.supprimerSauce = (req, res, next)=>{ 
     sauceSchema.deleteOne({_id: req.params.id})
     .then( () => res.status(200).send({'message': 'Sauce supprimée'}) )
     .catch(error => res.status(404).send({ error }))
 }
 
-//Fonction pour aimer une sauce
+//Middleware (fonction) pour aimer une sauce
 exports.aimerSauce = (req, res, next)=>{
     /* Dans ce middleware, je reçois l'ID de la sauce (req.params.id) et 
         un objet req.body contenant un like avec comme valeur (0, 1 ou -1) et un userId */
